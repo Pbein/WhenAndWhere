@@ -1,4 +1,4 @@
-# US-4.4: Schedules Page - Filters
+# US-4.4: Schedules Page - Filters ✅ COMPLETE
 
 ## User Story
 
@@ -12,13 +12,13 @@ P1 - Important for usability with large schedules
 
 ## Acceptance Criteria
 
-- [ ] Filter by crew (multi-select)
-- [ ] Filter by shift type (Day/Night/All)
-- [ ] Filter to show only unassigned slots
-- [ ] Filters persist during view changes
-- [ ] Clear all filters button
-- [ ] Filter state shown in header
-- [ ] Filtered count displayed
+- [x] Filter by crew (multi-select)
+- [x] Filter by shift type (Day/Night/All)
+- [x] Filter to show only unassigned slots
+- [x] Filters persist during view changes
+- [x] Clear all filters button
+- [x] Filter state shown in header
+- [x] Active filter count displayed
 
 ## Technical Details
 

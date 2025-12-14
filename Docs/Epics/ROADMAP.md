@@ -9,14 +9,14 @@ This document outlines the complete build plan for the WhenAndWhere scheduling a
 | Phase | Epic | Status | Completed |
 |-------|------|--------|-----------|
 | 1 | E01 Foundation Schema | ✅ Complete | Dec 14, 2024 |
-| 2 | E02 Core Backend APIs | 🔲 Not Started | - |
-| 2 | E03 Shared UI Components | 🔲 Not Started | - |
-| 3 | E04 Schedule Management | 🔲 Not Started | - |
-| 4 | E05 Mission Management | 🔲 Not Started | - |
-| 4 | E06 Team & Crew Management | 🔲 Not Started | - |
-| 4 | E07 Template Management | 🔲 Not Started | - |
-| 5 | E08 Dashboard & Reporting | 🔲 Not Started | - |
-| 6 | E09 Advanced Workflows | 🔲 Not Started | - |
+| 2 | E02 Core Backend APIs | ✅ Complete | Dec 14, 2024 |
+| 2 | E03 Shared UI Components | ✅ Complete | Dec 14, 2024 |
+| 3 | E04 Schedule Management | ✅ Complete | Dec 14, 2024 |
+| 4 | E05 Mission Management | 🔲 Ready | - |
+| 4 | E06 Team & Crew Management | 🔲 Ready | - |
+| 4 | E07 Template Management | 🔲 Ready | - |
+| 5 | E08 Dashboard & Reporting | ⏳ Blocked | - |
+| 6 | E09 Advanced Workflows | ⏳ Blocked | - |
 
 ## Architecture Principles
 
@@ -32,11 +32,11 @@ E01 Foundation Schema ✅
        │
        ├──────────────────┐
        ▼                  ▼
-E02 Core APIs      E03 UI Components
+E02 Core APIs ✅    E03 UI Components ✅
        │                  │
        └────────┬─────────┘
                 ▼
-         E04 Schedule Management
+         E04 Schedule Management ✅
                 │
        ┌────────┼────────┬─────────┐
        ▼        ▼        ▼         ▼
@@ -54,16 +54,16 @@ E02 Core APIs      E03 UI Components
 | Phase | Epic | Description | Est. Stories | Status |
 |-------|------|-------------|--------------|--------|
 | 1 | E01 | Foundation Schema | 6 | ✅ Complete |
-| 2 | E02 | Core Backend APIs | 6 | 🔲 Ready |
-| 2 | E03 | Shared UI Components (parallel) | 4 | 🔲 Ready |
-| 3 | E04 | Schedule Management | 4 | ⏳ Blocked |
-| 4 | E05 | Mission Management | 3 | ⏳ Blocked |
-| 4 | E06 | Team & Crew Management | 3 | ⏳ Blocked |
-| 4 | E07 | Template Management | 2 | ⏳ Blocked |
+| 2 | E02 | Core Backend APIs | 6 | ✅ Complete |
+| 2 | E03 | Shared UI Components (parallel) | 4 | ✅ Complete |
+| 3 | E04 | Schedule Management | 4 | ✅ Complete |
+| 4 | E05 | Mission Management | 3 | 🔲 Ready |
+| 4 | E06 | Team & Crew Management | 3 | 🔲 Ready |
+| 4 | E07 | Template Management | 2 | 🔲 Ready |
 | 5 | E08 | Dashboard & Reporting | 2 | ⏳ Blocked |
 | 6 | E09 | Advanced Workflows | 3 | ⏳ Blocked |
 
-**Total User Stories: 33**
+**Total User Stories: 33** | **Completed: 20** | **Remaining: 13**
 
 ---
 
@@ -77,22 +77,59 @@ Extend the Convex schema with all required tables and fields for the complete da
 - Extended: `zooMissions`, `users`, `teams`, `shiftInstances`, `shiftAssignments`
 - Shared types: `convex/lib/types.ts`
 
-### E02: Core Backend APIs 🔲 READY
+### E02: Core Backend APIs ✅ COMPLETE
 Build all Convex mutations and queries needed by the UI.
 
-### E03: Shared UI Components 🔲 READY
+**What was built:**
+- `convex/helpers/schedule.ts` - Cycle day calculation, time parsing, shift timing utilities
+- `convex/helpers/coverage.ts` - Coverage status calculation and gap detection
+- `convex/helpers/eligibility.ts` - Employee filtering and sorting for shift assignments
+- `convex/schedules.ts` - Extended with 15+ new APIs:
+  - Schedule generation: `startMissionSchedule`, `extendSchedule`, `getLastGeneratedDate`
+  - Coverage: `getShiftCoverageStatus`, `validateCoverage`, `getMissionCoverageHealth`
+  - Assignments: `getEligibleReplacements`, `getShiftWithAssignments`
+  - Approval: `submitForApproval`, `approveSchedule`, `rejectSchedule`, `getPendingApprovals`
+- `convex/teams.ts` - Extended with crew membership APIs
+- `convex/qualifications.ts` - Full CRUD + grant/revoke user qualifications
+- `convex/callouts.ts` - Report, assign replacement, get pending/history
+
+### E03: Shared UI Components ✅ COMPLETE
 Reusable calendar components, panels, and indicators used across multiple pages.
 
-### E04: Schedule Management ⏳ BLOCKED
+**What was built:**
+- `components/schedule/coverage-badge.tsx` - Green/yellow/red status indicators
+- `components/schedule/coverage-summary.tsx` - Full coverage details display
+- `components/schedule/enhanced-week-grid.tsx` - Week view with crews as rows
+- `components/schedule/month-view.tsx` - Month calendar with day summaries
+- `components/schedule/shift-cell.tsx` - Individual shift cells
+- `components/schedule/slot-panel.tsx` - Side panel for shift management
+- `components/schedule/employee-list.tsx` - Searchable, filterable employee picker
+- `components/schedule/assignment-section.tsx` - Grouped assignment display
+- `components/schedule/schedule-context.tsx` - Shared calendar state
+- `components/schedule/hooks/use-calendar-navigation.ts` - Navigation utilities
+- `components/schedule/hooks/use-shift-selection.ts` - Selection state
+- `lib/constants.ts` - Shared color palettes
+
+### E04: Schedule Management ✅ COMPLETE
 The heart of the app - viewing and managing shift schedules.
 
-### E05: Mission Management ⏳ BLOCKED
+**What was built:**
+- `app/(app)/schedules/page.tsx` - Complete rewrite with full calendar integration
+- `components/schedule/schedule-header.tsx` - Mission selector, date navigation, view toggle
+- `components/schedule/schedule-status.tsx` - Shows how far schedule is generated
+- `components/schedule/extend-schedule-modal.tsx` - Modal for generating future shifts
+- `components/schedule/filter-bar.tsx` - Crew, shift type, and gap filtering
+- Week/Month view toggling with smooth transitions
+- Slot panel integration with ESC key to close
+- Real-time updates when assignments change
+
+### E05: Mission Management 🔲 READY
 Mission detail pages and lifecycle management (start, pause, terminate).
 
-### E06: Team & Crew Management ⏳ BLOCKED
+### E06: Team & Crew Management 🔲 READY
 Managing crew memberships, employee details, and qualifications.
 
-### E07: Template Management ⏳ BLOCKED
+### E07: Template Management 🔲 READY
 Creating and editing Panama 2-2-3 and custom schedule templates.
 
 ### E08: Dashboard & Reporting ⏳ BLOCKED
@@ -106,26 +143,24 @@ PTO conflict detection, call-out handling, and schedule approval flow.
 ## Shared Code Strategy (DRY)
 
 ### Shared Utilities (`lib/`)
-- `lib/date-utils.ts` - Date formatting, cycle calculations
-- `lib/coverage-utils.ts` - Coverage status computation
-- `lib/constants.ts` - Shared constants (colors, roles, statuses)
+- `lib/utils.ts` - General utilities (cn function) ✅
+- `lib/constants.ts` - Shared constants (colors, roles, statuses) ✅
 
-### Shared Hooks (`hooks/`)
-- `useMission(id)` - Fetch mission with related data
-- `useShiftSlots(missionId, dateRange)` - Fetch shifts with assignments
-- `useCoverageStatus(shiftId)` - Compute coverage status
-- `useEligibleEmployees(shiftId)` - Get sorted replacement candidates
+### Shared Hooks (`components/schedule/hooks/`)
+- `use-calendar-navigation.ts` - Date range and navigation ✅
+- `use-shift-selection.ts` - Shift selection and panel state ✅
 
 ### Shared Components (`components/`)
-- `components/ui/` - Base UI primitives (existing)
-- `components/schedule/` - Calendar and scheduling components
-- `components/common/` - Shared layout components
-- `components/forms/` - Reusable form patterns
+- `components/ui/` - Base UI primitives ✅
+- `components/schedule/` - Calendar and scheduling components ✅
+- `components/nav/` - Navigation components ✅
 
 ### Convex Shared Logic (`convex/`)
 - `convex/lib/types.ts` - Shared type constants ✅
-- `convex/helpers/` - Shared validation and computation functions
-- `convex/rbac.ts` - Role-based access control (existing)
+- `convex/helpers/schedule.ts` - Schedule calculation helpers ✅
+- `convex/helpers/coverage.ts` - Coverage validation helpers ✅
+- `convex/helpers/eligibility.ts` - User eligibility helpers ✅
+- `convex/rbac.ts` - Role-based access control ✅
 
 ---
 

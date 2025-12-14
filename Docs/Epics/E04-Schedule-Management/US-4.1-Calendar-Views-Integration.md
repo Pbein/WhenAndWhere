@@ -1,4 +1,4 @@
-# US-4.1: Schedules Page - Calendar Views Integration
+# US-4.1: Schedules Page - Calendar Views Integration ✅ COMPLETE
 
 ## User Story
 
@@ -12,13 +12,13 @@ P0 - Core page functionality
 
 ## Acceptance Criteria
 
-- [ ] Toggle button to switch between Week and Month view
-- [ ] Week view shows 7 or 14 days with detailed shift cells
-- [ ] Month view shows full month with day summaries
-- [ ] Clicking a day in month view switches to week view
-- [ ] Selected mission persists across view changes
-- [ ] Date navigation (prev/next) works in both views
-- [ ] "Today" button to jump to current date
+- [x] Toggle button to switch between Week and Month view
+- [x] Week view shows 7 or 14 days with detailed shift cells
+- [x] Month view shows full month with day summaries
+- [x] Clicking a day in month view switches to week view
+- [x] Selected mission persists across view changes
+- [x] Date navigation (prev/next) works in both views
+- [x] "Today" button to jump to current date
 
 ## Technical Details
 

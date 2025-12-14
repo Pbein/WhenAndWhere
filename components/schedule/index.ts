@@ -15,6 +15,13 @@ export { CoverageBadge } from "./coverage-badge";
 export type { CoverageStatus } from "./coverage-badge";
 export { CoverageSummary } from "./coverage-summary";
 
+// Page components
+export { ScheduleHeader } from "./schedule-header";
+export { ScheduleStatus } from "./schedule-status";
+export { ExtendScheduleModal } from "./extend-schedule-modal";
+export { FilterBar, DEFAULT_FILTERS } from "./filter-bar";
+export type { ScheduleFilters as FilterState } from "./filter-bar";
+
 // Context and hooks
 export { ScheduleProvider, useSchedule } from "./schedule-context";
 export type { ViewMode, ScheduleFilters } from "./schedule-context";

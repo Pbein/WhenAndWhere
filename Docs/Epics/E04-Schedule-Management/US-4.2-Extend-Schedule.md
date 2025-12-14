@@ -1,4 +1,4 @@
-# US-4.2: Schedules Page - Extend Schedule
+# US-4.2: Schedules Page - Extend Schedule ✅ COMPLETE
 
 ## User Story
 
@@ -12,13 +12,13 @@ P0 - Core scheduling workflow
 
 ## Acceptance Criteria
 
-- [ ] "Extend Schedule" button visible when mission has active template
-- [ ] Shows modal with duration options (1 month, 3 months, 6 months, 1 year)
-- [ ] Displays current "generated through" date
-- [ ] Preview shows how many shifts will be created
-- [ ] Progress indicator during generation
-- [ ] Success message with count of shifts created
-- [ ] Calendar automatically shows new date range after extension
+- [x] "Extend Schedule" button visible when mission has active template
+- [x] Shows modal with duration options (2 weeks, 1 month, 3 months, 6 months)
+- [x] Displays current "generated through" date
+- [x] Preview shows how many shifts will be created
+- [x] Progress indicator during generation
+- [x] Success message with count of shifts created
+- [x] Calendar automatically shows new date range after extension
 
 ## Technical Details
 
