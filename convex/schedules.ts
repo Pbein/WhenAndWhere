@@ -672,3 +672,51 @@ export const getPendingApprovals = query({
     return result;
   },
 });
+
+/**
+ * Get upcoming shifts for a specific user
+ */
+export const getUserUpcomingShifts = query({
+  args: {
+    userId: v.id("users"),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    await requireAuth(ctx);
+
+    const now = Date.now();
+    const limit = args.limit ?? 10;
+
+    // Get all assignments for this user
+    const assignments = await ctx.db
+      .query("shiftAssignments")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+
+    // Get shift details for each assignment
+    const shiftsWithDetails = await Promise.all(
+      assignments.map(async (assignment) => {
+        const shift = await ctx.db.get(assignment.shiftInstanceId);
+        if (!shift || shift.dateStart < now) return null;
+
+        const shiftDefinition = await ctx.db.get(shift.shiftDefinitionId);
+        const mission = await ctx.db.get(shift.missionId);
+        const team = shift.teamId ? await ctx.db.get(shift.teamId) : null;
+
+        return {
+          ...shift,
+          assignment,
+          shiftDefinition,
+          mission,
+          team,
+        };
+      })
+    );
+
+    // Filter out nulls and past shifts, sort by date, limit
+    return shiftsWithDetails
+      .filter((s): s is NonNullable<typeof s> => s !== null)
+      .sort((a, b) => a.dateStart - b.dateStart)
+      .slice(0, limit);
+  },
+});

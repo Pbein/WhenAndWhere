@@ -12,10 +12,10 @@ This document outlines the complete build plan for the WhenAndWhere scheduling a
 | 2 | E02 Core Backend APIs | ✅ Complete | Dec 14, 2024 |
 | 2 | E03 Shared UI Components | ✅ Complete | Dec 14, 2024 |
 | 3 | E04 Schedule Management | ✅ Complete | Dec 14, 2024 |
-| 4 | E05 Mission Management | 🔲 Ready | - |
-| 4 | E06 Team & Crew Management | 🔲 Ready | - |
-| 4 | E07 Template Management | 🔲 Ready | - |
-| 5 | E08 Dashboard & Reporting | ⏳ Blocked | - |
+| 4 | E05 Mission Management | ✅ Complete | Dec 14, 2024 |
+| 4 | E06 Team & Crew Management | ✅ Complete | Dec 14, 2024 |
+| 4 | E07 Template Management | ✅ Complete | Dec 14, 2024 |
+| 5 | E08 Dashboard & Reporting | 🔲 Ready | - |
 | 6 | E09 Advanced Workflows | ⏳ Blocked | - |
 
 ## Architecture Principles
@@ -57,13 +57,13 @@ E02 Core APIs ✅    E03 UI Components ✅
 | 2 | E02 | Core Backend APIs | 6 | ✅ Complete |
 | 2 | E03 | Shared UI Components (parallel) | 4 | ✅ Complete |
 | 3 | E04 | Schedule Management | 4 | ✅ Complete |
-| 4 | E05 | Mission Management | 3 | 🔲 Ready |
-| 4 | E06 | Team & Crew Management | 3 | 🔲 Ready |
-| 4 | E07 | Template Management | 2 | 🔲 Ready |
-| 5 | E08 | Dashboard & Reporting | 2 | ⏳ Blocked |
+| 4 | E05 | Mission Management | 3 | ✅ Complete |
+| 4 | E06 | Team & Crew Management | 3 | ✅ Complete |
+| 4 | E07 | Template Management | 2 | ✅ Complete |
+| 5 | E08 | Dashboard & Reporting | 2 | 🔲 Ready |
 | 6 | E09 | Advanced Workflows | 3 | ⏳ Blocked |
 
-**Total User Stories: 33** | **Completed: 20** | **Remaining: 13**
+**Total User Stories: 33** | **Completed: 28** | **Remaining: 5**
 
 ---
 
@@ -123,16 +123,55 @@ The heart of the app - viewing and managing shift schedules.
 - Slot panel integration with ESC key to close
 - Real-time updates when assignments change
 
-### E05: Mission Management 🔲 READY
+### E05: Mission Management ✅ COMPLETE
 Mission detail pages and lifecycle management (start, pause, terminate).
 
-### E06: Team & Crew Management 🔲 READY
+**What was built:**
+- `app/(app)/missions/[id]/page.tsx` - Mission detail page with comprehensive management
+- `components/missions/mission-header.tsx` - Header with name, status badge, actions
+- `components/missions/mission-lifecycle-card.tsx` - Template selector, anchor date, status
+- `components/missions/cycle-position-indicator.tsx` - Visual cycle progress bar
+- `components/missions/mission-status-actions.tsx` - Pause/Resume/Terminate controls
+- `components/missions/terminate-mission-dialog.tsx` - Confirmation dialog
+- `components/missions/crews-card.tsx` - Displays associated crews with counts
+- `components/missions/shift-definitions-card.tsx` - Day/Night shift management
+- `components/missions/shift-definition-form.tsx` - Create/edit shifts with presets
+- `components/missions/quick-actions-card.tsx` - Quick links to schedule, extend, crews
+
+### E06: Team & Crew Management ✅ COMPLETE
 Managing crew memberships, employee details, and qualifications.
 
-### E07: Template Management 🔲 READY
+**What was built:**
+- `app/(app)/teams/page.tsx` - Enhanced with expandable crew cards and member management
+- `app/(app)/crew/page.tsx` - Updated with links to employee details
+- `app/(app)/crew/[id]/page.tsx` - Employee detail page with profile, crews, qualifications
+- `app/(app)/admin/qualifications/page.tsx` - Qualification administration
+- `components/crew/crew-card.tsx` - Expandable card showing team members
+- `components/crew/crew-member-row.tsx` - Member display with qualifications
+- `components/crew/add-member-dialog.tsx` - Searchable member picker
+- `components/crew/create-team-dialog.tsx` - Team creation form
+- `components/crew/employee-header.tsx` - Employee profile header
+- `components/crew/crew-memberships-list.tsx` - Manage user crews
+- `components/crew/qualifications-list.tsx` - Manage user qualifications
+- `components/crew/upcoming-shifts-list.tsx` - Display upcoming assignments
+- `components/crew/pto-history-list.tsx` - Display PTO history
+- `components/qualifications/qualification-form-dialog.tsx` - Create/edit qualifications
+- `components/qualifications/qualifications-admin-list.tsx` - Admin list view
+
+### E07: Template Management ✅ COMPLETE
 Creating and editing Panama 2-2-3 and custom schedule templates.
 
-### E08: Dashboard & Reporting ⏳ BLOCKED
+**What was built:**
+- `app/(app)/templates/page.tsx` - Enhanced with full CRUD and pattern builder
+- `components/templates/template-card.tsx` - Template display with usage info
+- `components/templates/template-form-dialog.tsx` - Create/edit template details
+- `components/templates/pattern-cell.tsx` - Interactive cell (Off/Day/Night)
+- `components/templates/pattern-builder.tsx` - Visual grid editor for patterns
+- `components/templates/pattern-preview.tsx` - Read-only pattern summary
+- `components/templates/pattern-editor-dialog.tsx` - Full pattern editing experience
+- `lib/template-presets.ts` - Panama 2-2-3 and Simple 4-Crew presets
+
+### E08: Dashboard & Reporting 🔲 READY
 Role-specific dashboards showing coverage health and pending actions.
 
 ### E09: Advanced Workflows ⏳ BLOCKED
@@ -145,6 +184,7 @@ PTO conflict detection, call-out handling, and schedule approval flow.
 ### Shared Utilities (`lib/`)
 - `lib/utils.ts` - General utilities (cn function) ✅
 - `lib/constants.ts` - Shared constants (colors, roles, statuses) ✅
+- `lib/template-presets.ts` - Panama 2-2-3 and pattern utilities ✅
 
 ### Shared Hooks (`components/schedule/hooks/`)
 - `use-calendar-navigation.ts` - Date range and navigation ✅
@@ -154,6 +194,10 @@ PTO conflict detection, call-out handling, and schedule approval flow.
 - `components/ui/` - Base UI primitives ✅
 - `components/schedule/` - Calendar and scheduling components ✅
 - `components/nav/` - Navigation components ✅
+- `components/missions/` - Mission management components ✅
+- `components/crew/` - Team and employee management components ✅
+- `components/templates/` - Template pattern building components ✅
+- `components/qualifications/` - Qualification management components ✅
 
 ### Convex Shared Logic (`convex/`)
 - `convex/lib/types.ts` - Shared type constants ✅
@@ -161,6 +205,9 @@ PTO conflict detection, call-out handling, and schedule approval flow.
 - `convex/helpers/coverage.ts` - Coverage validation helpers ✅
 - `convex/helpers/eligibility.ts` - User eligibility helpers ✅
 - `convex/rbac.ts` - Role-based access control ✅
+- `convex/schedules.ts` - Extended with `getUserUpcomingShifts` ✅
+- `convex/pto.ts` - Extended with `getUserHistory` ✅
+- `convex/teams.ts` - Extended with `listByMissionWithCounts` ✅
 
 ---
 

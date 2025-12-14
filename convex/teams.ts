@@ -300,3 +300,33 @@ async function clearPrimaryCrew(ctx: any, userId: Id<"users">) {
     }
   }
 }
+
+/**
+ * Get teams by mission with member counts
+ */
+export const listByMissionWithCounts = query({
+  args: { missionId: v.id("zooMissions") },
+  handler: async (ctx, args) => {
+    await requireAuth(ctx);
+
+    const teams = await ctx.db
+      .query("teams")
+      .withIndex("by_mission", (q) => q.eq("missionId", args.missionId))
+      .collect();
+
+    // Get member count for each team
+    return await Promise.all(
+      teams.map(async (team) => {
+        const memberships = await ctx.db
+          .query("crewMemberships")
+          .withIndex("by_team", (q) => q.eq("teamId", team._id))
+          .collect();
+
+        return {
+          ...team,
+          memberCount: memberships.length,
+        };
+      })
+    );
+  },
+});

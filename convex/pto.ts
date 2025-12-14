@@ -97,6 +97,23 @@ export const cancel = mutation({
   },
 });
 
+/**
+ * Get PTO history for a specific user
+ */
+export const getUserHistory = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    await requireAuth(ctx);
+    const requests = await ctx.db
+      .query("ptoRequests")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .collect();
+
+    // Sort by start date descending
+    return requests.sort((a, b) => b.startDate - a.startDate);
+  },
+});
+
 
 
 

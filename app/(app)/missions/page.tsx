@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,31 +40,34 @@ export default function MissionsPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {missions?.map((mission) => (
-          <Card key={mission._id}>
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <CardTitle>{mission.name}</CardTitle>
-                <Badge
-                  tone={
-                    mission.status === "ACTIVE"
-                      ? "green"
+          <Link key={mission._id} href={`/missions/${mission._id}`}>
+            <Card className="hover:border-[#3a3a3a] transition-colors cursor-pointer">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <CardTitle>{mission.name}</CardTitle>
+                  <Badge
+                    tone={
+                      mission.status === "ACTIVE"
+                        ? "green"
+                        : mission.status === "PAUSED"
+                          ? "amber"
+                          : "gray"
+                    }
+                  >
+                    {mission.status === "ACTIVE"
+                      ? "Active"
                       : mission.status === "PAUSED"
-                        ? "amber"
-                        : "gray"
-                  }
-                >
-                  {mission.status === "ACTIVE"
-                    ? "Active"
-                    : mission.status === "PAUSED"
-                      ? "Paused"
-                      : "Terminated"}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-[#a1a1aa]">{mission.description}</p>
-            </CardContent>
-          </Card>
+                        ? "Paused"
+                        : "Terminated"}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-[#a1a1aa]">{mission.description}</p>
+                <p className="text-xs text-emerald-500 mt-2">View details →</p>
+              </CardContent>
+            </Card>
+          </Link>
         ))}
       </div>
 
