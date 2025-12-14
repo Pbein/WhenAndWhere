@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -36,6 +36,26 @@ export function ExtendScheduleModal({
   const [selectedDuration, setSelectedDuration] = useState(DURATION_OPTIONS[1]);
   const [isExtending, setIsExtending] = useState(false);
   const [result, setResult] = useState<{ success: boolean; count?: number; error?: string } | null>(null);
+  
+  const autoCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup timeout on unmount or when modal closes
+  useEffect(() => {
+    return () => {
+      if (autoCloseTimeoutRef.current) {
+        clearTimeout(autoCloseTimeoutRef.current);
+        autoCloseTimeoutRef.current = null;
+      }
+    };
+  }, []);
+
+  // Clear timeout when modal closes externally
+  useEffect(() => {
+    if (!isOpen && autoCloseTimeoutRef.current) {
+      clearTimeout(autoCloseTimeoutRef.current);
+      autoCloseTimeoutRef.current = null;
+    }
+  }, [isOpen]);
 
   const lastGeneratedDate = useQuery(
     api.schedules.getLastGeneratedDate,
@@ -62,11 +82,12 @@ export function ExtendScheduleModal({
 
       setResult({ success: true, count: response.generated });
 
-      // Auto-close after short delay on success
-      setTimeout(() => {
+      // Auto-close after short delay on success (with cleanup ref)
+      autoCloseTimeoutRef.current = setTimeout(() => {
         onSuccess?.(endDate);
         onClose();
         setResult(null);
+        autoCloseTimeoutRef.current = null;
       }, 1500);
     } catch (error) {
       setResult({
@@ -80,6 +101,11 @@ export function ExtendScheduleModal({
 
   const handleClose = () => {
     if (!isExtending) {
+      // Clear any pending auto-close timeout
+      if (autoCloseTimeoutRef.current) {
+        clearTimeout(autoCloseTimeoutRef.current);
+        autoCloseTimeoutRef.current = null;
+      }
       setResult(null);
       onClose();
     }
