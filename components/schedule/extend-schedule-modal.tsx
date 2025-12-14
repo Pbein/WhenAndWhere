@@ -181,7 +181,11 @@ export function ExtendScheduleModal({
           <div className="p-3 rounded-lg bg-[#111111] border border-[#2a2a2a]">
             <div className="text-xs text-[#a1a1aa] mb-1">Will generate through</div>
             <div className="text-lg font-medium text-[#f5f5f5]">
-              {format(endDate, "MMMM d, yyyy")}
+              {lastGeneratedDate === undefined ? (
+                <span className="animate-pulse">Calculating...</span>
+              ) : (
+                format(endDate, "MMMM d, yyyy")
+              )}
             </div>
             <div className="text-xs text-[#a1a1aa] mt-1">
               ~{selectedDuration.days * 2} shifts (Day + Night per day)
@@ -218,7 +222,10 @@ export function ExtendScheduleModal({
           <Button variant="outline" onClick={handleClose} disabled={isExtending}>
             Cancel
           </Button>
-          <Button onClick={handleExtend} disabled={isExtending || result?.success}>
+          <Button 
+            onClick={handleExtend} 
+            disabled={isExtending || result?.success || lastGeneratedDate === undefined}
+          >
             {isExtending ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
