@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -36,6 +36,22 @@ export function ExtendScheduleModal({
   const [selectedDuration, setSelectedDuration] = useState(DURATION_OPTIONS[1]);
   const [isExtending, setIsExtending] = useState(false);
   const [result, setResult] = useState<{ success: boolean; count?: number; error?: string } | null>(null);
+  
+  const autoCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup timeout on unmount or when modal closes
+  useEffect(() => {
+    if (!isOpen && autoCloseTimeoutRef.current) {
+      clearTimeout(autoCloseTimeoutRef.current);
+      autoCloseTimeoutRef.current = null;
+    }
+    return () => {
+      if (autoCloseTimeoutRef.current) {
+        clearTimeout(autoCloseTimeoutRef.current);
+        autoCloseTimeoutRef.current = null;
+      }
+    };
+  }, [isOpen]);
 
   const lastGeneratedDate = useQuery(
     api.schedules.getLastGeneratedDate,
@@ -63,7 +79,8 @@ export function ExtendScheduleModal({
       setResult({ success: true, count: response.generated });
 
       // Auto-close after short delay on success
-      setTimeout(() => {
+      autoCloseTimeoutRef.current = setTimeout(() => {
+        autoCloseTimeoutRef.current = null;
         onSuccess?.(endDate);
         onClose();
         setResult(null);
@@ -80,6 +97,10 @@ export function ExtendScheduleModal({
 
   const handleClose = () => {
     if (!isExtending) {
+      if (autoCloseTimeoutRef.current) {
+        clearTimeout(autoCloseTimeoutRef.current);
+        autoCloseTimeoutRef.current = null;
+      }
       setResult(null);
       onClose();
     }
@@ -155,13 +176,7 @@ export function ExtendScheduleModal({
           <div className="p-3 rounded-lg bg-[#111111] border border-[#2a2a2a]">
             <div className="text-xs text-[#a1a1aa] mb-1">Will generate through</div>
             <div className="text-lg font-medium text-[#f5f5f5]">
-              {lastGeneratedDate === undefined ? (
-                <span className="animate-pulse">Calculating...</span>
-              ) : lastGeneratedDate ? (
-                format(endDate, "MMMM d, yyyy")
-              ) : (
-                <span className="text-[#505050]">—</span>
-              )}
+              {format(endDate, "MMMM d, yyyy")}
             </div>
             <div className="text-xs text-[#a1a1aa] mt-1">
               ~{selectedDuration.days * 2} shifts (Day + Night per day)
@@ -198,7 +213,10 @@ export function ExtendScheduleModal({
           <Button variant="outline" onClick={handleClose} disabled={isExtending}>
             Cancel
           </Button>
-          <Button onClick={handleExtend} disabled={isExtending || result?.success}>
+          <Button 
+            onClick={handleExtend} 
+            disabled={isExtending || result?.success || lastGeneratedDate === undefined}
+          >
             {isExtending ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
