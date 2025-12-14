@@ -1,101 +1,47 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { BasicUserDashboard } from "@/components/dashboard/basic-user-dashboard";
+import { TeamLeadDashboard } from "@/components/dashboard/team-lead-dashboard";
+import { OpsLeadDashboard } from "@/components/dashboard/ops-lead-dashboard";
 
-type Role = "BasicUser" | "TeamLead" | "OperationsLead" | "Admin";
-const leaderRoles: Role[] = ["TeamLead", "OperationsLead", "Admin"];
-
+/**
+ * Role-based dashboard that routes to the appropriate view based on user role.
+ * - BasicUser: Personal schedule and PTO status
+ * - TeamLead: Mission health, pending PTO, coverage gaps
+ * - OperationsLead/Admin: Cross-mission overview and approvals
+ */
 export default function DashboardPage() {
   const currentUser = useQuery(api.users.current);
-  const missions = useQuery(api.missions.listActive);
-  
-  // Only fetch pending PTO if user has permission
-  const canViewPendingPto = currentUser && leaderRoles.includes(currentUser.role);
-  const ptoRequests = useQuery(
-    api.pto.pending,
-    canViewPendingPto ? {} : "skip"
-  );
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-[#f5f5f5]">Dashboard</h1>
-        <p className="text-sm text-[#a1a1aa]">
-          Cross-mission health, open gaps, and approvals.
-        </p>
+  // Loading state
+  if (currentUser === undefined) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-[#a1a1aa]">Loading dashboard...</div>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card accent="emerald">
-          <CardHeader>
-            <CardTitle>Active Missions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-semibold text-[#f5f5f5]">
-              {missions?.length ?? "..."}
-            </div>
-            <div className="text-sm text-[#a1a1aa]">Currently active</div>
-          </CardContent>
-        </Card>
-        {canViewPendingPto && (
-          <Card accent="amber">
-            <CardHeader>
-              <CardTitle>PTO Pending</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-semibold text-[#f5f5f5]">
-                {ptoRequests?.length ?? "..."}
-              </div>
-              <div className="text-sm text-[#a1a1aa]">Awaiting review</div>
-            </CardContent>
-          </Card>
-        )}
-        <Card accent="blue">
-          <CardHeader>
-            <CardTitle>Open Shifts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-semibold text-[#f5f5f5]">-</div>
-            <div className="text-sm text-[#a1a1aa]">Coming soon</div>
-          </CardContent>
-        </Card>
-        <Card accent="emerald">
-          <CardHeader>
-            <CardTitle>Teams</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-semibold text-[#f5f5f5]">-</div>
-            <div className="text-sm text-[#a1a1aa]">Coming soon</div>
-          </CardContent>
-        </Card>
+    );
+  }
+
+  // Not authenticated or user not synced
+  if (currentUser === null) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-[#a1a1aa]">Please sign in to view your dashboard.</div>
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Mission Overview</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {missions?.map((mission) => (
-            <div
-              key={mission._id}
-              className="flex items-center justify-between rounded-lg border border-[#2a2a2a] bg-[#111111] px-3 py-2"
-            >
-              <div className="text-sm font-semibold text-[#f5f5f5]">{mission.name}</div>
-              <div className="text-sm text-[#a1a1aa]">
-                {mission.status === "ACTIVE"
-                  ? "Active"
-                  : mission.status === "PAUSED"
-                    ? "Paused"
-                    : "Terminated"}
-              </div>
-            </div>
-          ))}
-          {(!missions || missions.length === 0) && (
-            <div className="text-sm text-[#a1a1aa]">No missions yet. Add one to get started!</div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  );
+    );
+  }
+
+  // Route to role-specific dashboard
+  switch (currentUser.role) {
+    case "OperationsLead":
+    case "Admin":
+      return <OpsLeadDashboard user={currentUser} />;
+    case "TeamLead":
+      return <TeamLeadDashboard user={currentUser} />;
+    case "BasicUser":
+    default:
+      return <BasicUserDashboard user={currentUser} />;
+  }
 }
-

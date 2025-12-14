@@ -45,11 +45,12 @@ export function QuickActionsCard({ mission }: QuickActionsCardProps) {
         <CardTitle>Quick Actions</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
-        <Button variant="outline" className="w-full justify-start" asChild>
-          <Link href={`/schedules?mission=${mission._id}`}>
-            📅 View Schedule
-          </Link>
-        </Button>
+        <Link
+          href={`/schedules?mission=${mission._id}`}
+          className="inline-flex w-full items-center justify-start gap-2 rounded-md border border-[#2a2a2a] bg-[#1a1a1a] px-4 py-2 text-sm font-medium text-[#f5f5f5] transition hover:bg-[#2a2a2a]"
+        >
+          📅 View Schedule
+        </Link>
         
         <Button
           variant="outline"
@@ -60,11 +61,12 @@ export function QuickActionsCard({ mission }: QuickActionsCardProps) {
           {isExtending ? "⏳ Extending..." : "➕ Extend Schedule 2 Weeks"}
         </Button>
 
-        <Button variant="outline" className="w-full justify-start" asChild>
-          <Link href={`/teams?mission=${mission._id}`}>
-            👥 Manage Crews
-          </Link>
-        </Button>
+        <Link
+          href={`/teams?mission=${mission._id}`}
+          className="inline-flex w-full items-center justify-start gap-2 rounded-md border border-[#2a2a2a] bg-[#1a1a1a] px-4 py-2 text-sm font-medium text-[#f5f5f5] transition hover:bg-[#2a2a2a]"
+        >
+          👥 Manage Crews
+        </Link>
 
         {!isConfigured && (
           <p className="text-xs text-[#a1a1aa] mt-2">

@@ -1,8 +1,12 @@
-# Epic 08: Dashboard & Reporting
+# Epic 08: Dashboard & Reporting ✅ COMPLETE
 
 ## Overview
 
 Role-specific dashboards showing operational health, coverage gaps, pending actions, and key metrics.
+
+## Status
+
+**✅ Complete** - Dec 14, 2024
 
 ## Priority
 
@@ -10,15 +14,15 @@ Role-specific dashboards showing operational health, coverage gaps, pending acti
 
 ## Dependencies
 
-- E02: Core Backend APIs (coverage validation)
-- E04: Schedule Management (for context)
+- E02: Core Backend APIs (coverage validation) ✅
+- E04: Schedule Management (for context) ✅
 
 ## User Stories
 
-| ID | Title | Priority | Estimate |
-|----|-------|----------|----------|
-| US-8.1 | TeamLead Dashboard | P0 | M |
-| US-8.2 | OpsLead Dashboard | P0 | M |
+| ID | Title | Priority | Estimate | Status |
+|----|-------|----------|----------|--------|
+| US-8.1 | TeamLead Dashboard | P0 | M | ✅ Complete |
+| US-8.2 | OpsLead Dashboard | P0 | M | ✅ Complete |
 
 ## Technical Notes
 
@@ -78,7 +82,17 @@ Visual representation:
 
 ## Files Modified
 
-- `app/(app)/dashboard/page.tsx` - Complete rewrite
-- `components/dashboard/metric-card.tsx` - New
-- `components/dashboard/mission-health-card.tsx` - New
-- `components/dashboard/upcoming-shifts.tsx` - New
+- `app/(app)/dashboard/page.tsx` - Complete rewrite with role-based routing
+- `components/dashboard/index.ts` - Barrel exports
+- `components/dashboard/metric-card.tsx` - Reusable metric card with accent colors
+- `components/dashboard/basic-user-dashboard.tsx` - Personal schedule and PTO view
+- `components/dashboard/team-lead-dashboard.tsx` - Mission health and pending actions
+- `components/dashboard/ops-lead-dashboard.tsx` - Cross-mission oversight and approvals
+- `components/dashboard/mission-health-grid.tsx` - Grid of missions with health indicators
+- `components/dashboard/mission-status-card.tsx` - Detailed mission card with stats
+- `components/dashboard/pending-pto-list.tsx` - PTO requests with approve/deny actions
+- `components/dashboard/coverage-alerts-list.tsx` - Coverage gap alerts by mission
+- `components/dashboard/pending-approvals-table.tsx` - Schedule approvals table
+- `components/dashboard/upcoming-shifts-card.tsx` - User's upcoming shifts display
+- `components/dashboard/my-pto-status.tsx` - User's PTO request history
+- `convex/schedules.ts` - Extended with `getDashboardStats` aggregation query

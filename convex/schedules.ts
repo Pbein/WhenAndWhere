@@ -720,3 +720,114 @@ export const getUserUpcomingShifts = query({
       .slice(0, limit);
   },
 });
+
+// ============================================================================
+// Dashboard Aggregation APIs
+// ============================================================================
+
+/**
+ * Get aggregated dashboard statistics across all missions
+ * Used by OpsLead and TeamLead dashboards for efficient data loading
+ */
+export const getDashboardStats = query({
+  args: {},
+  handler: async (ctx) => {
+    await requireAuth(ctx);
+
+    const now = Date.now();
+    const weekFromNow = now + 7 * MS_PER_DAY;
+
+    // Get all active missions
+    const allMissions = await ctx.db.query("zooMissions").collect();
+    const activeMissions = allMissions.filter(
+      (m) => m.status === "ACTIVE" || (m.status === undefined && m.active !== false)
+    );
+
+    // Calculate coverage health for each mission
+    const missionStats = await Promise.all(
+      activeMissions.map(async (mission) => {
+        const shifts = await ctx.db
+          .query("shiftInstances")
+          .withIndex("by_mission_and_date", (q) =>
+            q.eq("missionId", mission._id).gte("dateStart", now)
+          )
+          .filter((q) => q.lte(q.field("dateStart"), weekFromNow))
+          .collect();
+
+        let redCount = 0;
+        let yellowCount = 0;
+        let greenCount = 0;
+
+        for (const shift of shifts) {
+          const details = await getShiftCoverageDetails(ctx, shift._id);
+          if (details.status === "red") redCount++;
+          else if (details.status === "yellow") yellowCount++;
+          else greenCount++;
+        }
+
+        const health = determineHealth(redCount, yellowCount);
+        const gapCount = redCount + yellowCount;
+
+        // Get last generated date
+        const lastShift = await ctx.db
+          .query("shiftInstances")
+          .withIndex("by_mission_and_date", (q) => q.eq("missionId", mission._id))
+          .order("desc")
+          .first();
+
+        return {
+          missionId: mission._id,
+          missionName: mission.name,
+          status: mission.status ?? "ACTIVE",
+          health,
+          totalShifts: shifts.length,
+          gapCount,
+          redCount,
+          yellowCount,
+          greenCount,
+          lastGeneratedDate: lastShift?.dateStart ?? null,
+        };
+      })
+    );
+
+    // Aggregate totals
+    const totals = missionStats.reduce(
+      (acc, m) => ({
+        totalMissions: acc.totalMissions + 1,
+        totalShifts: acc.totalShifts + m.totalShifts,
+        totalGaps: acc.totalGaps + m.gapCount,
+        totalRed: acc.totalRed + m.redCount,
+        totalYellow: acc.totalYellow + m.yellowCount,
+        totalGreen: acc.totalGreen + m.greenCount,
+      }),
+      {
+        totalMissions: 0,
+        totalShifts: 0,
+        totalGaps: 0,
+        totalRed: 0,
+        totalYellow: 0,
+        totalGreen: 0,
+      }
+    );
+
+    // Get pending approvals count
+    const pendingShifts = await ctx.db
+      .query("shiftInstances")
+      .filter((q) => q.eq(q.field("status"), "PENDING_APPROVAL"))
+      .collect();
+
+    // Group by mission for pending approvals
+    const pendingByMission = new Map<string, number>();
+    for (const shift of pendingShifts) {
+      const key = shift.missionId.toString();
+      pendingByMission.set(key, (pendingByMission.get(key) ?? 0) + 1);
+    }
+
+    return {
+      missions: missionStats,
+      totals,
+      pendingApprovalsMissionCount: pendingByMission.size,
+      pendingApprovalsShiftCount: pendingShifts.length,
+    };
+  },
+});

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 
@@ -20,9 +19,12 @@ export function CrewsCard({ crews, missionId }: CrewsCardProps) {
     <Card>
       <CardHeader>
         <CardTitle>Crews</CardTitle>
-        <Button variant="ghost" size="sm" asChild>
-          <Link href={`/teams?mission=${missionId}`}>Manage</Link>
-        </Button>
+        <Link
+          href={`/teams?mission=${missionId}`}
+          className="text-sm text-[#a1a1aa] hover:text-[#f5f5f5] transition-colors"
+        >
+          Manage
+        </Link>
       </CardHeader>
       <CardContent className="space-y-2">
         {crews?.map((crew) => (

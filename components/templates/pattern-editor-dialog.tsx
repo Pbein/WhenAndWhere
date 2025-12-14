@@ -112,14 +112,14 @@ export function PatternEditorDialog({
         {/* Toggle between builder and preview */}
         <div className="flex gap-2 mb-4">
           <Button
-            variant={!showPreview ? "default" : "outline"}
+            variant={!showPreview ? "primary" : "outline"}
             size="sm"
             onClick={() => setShowPreview(false)}
           >
             Builder
           </Button>
           <Button
-            variant={showPreview ? "default" : "outline"}
+            variant={showPreview ? "primary" : "outline"}
             size="sm"
             onClick={() => setShowPreview(true)}
           >

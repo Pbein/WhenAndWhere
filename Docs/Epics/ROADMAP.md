@@ -15,8 +15,8 @@ This document outlines the complete build plan for the WhenAndWhere scheduling a
 | 4 | E05 Mission Management | ✅ Complete | Dec 14, 2024 |
 | 4 | E06 Team & Crew Management | ✅ Complete | Dec 14, 2024 |
 | 4 | E07 Template Management | ✅ Complete | Dec 14, 2024 |
-| 5 | E08 Dashboard & Reporting | 🔲 Ready | - |
-| 6 | E09 Advanced Workflows | ⏳ Blocked | - |
+| 5 | E08 Dashboard & Reporting | ✅ Complete | Dec 14, 2024 |
+| 6 | E09 Advanced Workflows | 🔲 Ready | - |
 
 ## Architecture Principles
 
@@ -60,10 +60,10 @@ E02 Core APIs ✅    E03 UI Components ✅
 | 4 | E05 | Mission Management | 3 | ✅ Complete |
 | 4 | E06 | Team & Crew Management | 3 | ✅ Complete |
 | 4 | E07 | Template Management | 2 | ✅ Complete |
-| 5 | E08 | Dashboard & Reporting | 2 | 🔲 Ready |
-| 6 | E09 | Advanced Workflows | 3 | ⏳ Blocked |
+| 5 | E08 | Dashboard & Reporting | 2 | ✅ Complete |
+| 6 | E09 | Advanced Workflows | 3 | 🔲 Ready |
 
-**Total User Stories: 33** | **Completed: 28** | **Remaining: 5**
+**Total User Stories: 33** | **Completed: 30** | **Remaining: 3**
 
 ---
 
@@ -171,10 +171,25 @@ Creating and editing Panama 2-2-3 and custom schedule templates.
 - `components/templates/pattern-editor-dialog.tsx` - Full pattern editing experience
 - `lib/template-presets.ts` - Panama 2-2-3 and Simple 4-Crew presets
 
-### E08: Dashboard & Reporting 🔲 READY
+### E08: Dashboard & Reporting ✅ COMPLETE
 Role-specific dashboards showing coverage health and pending actions.
 
-### E09: Advanced Workflows ⏳ BLOCKED
+**What was built:**
+- `app/(app)/dashboard/page.tsx` - Rewritten with role-based routing
+- `components/dashboard/metric-card.tsx` - Reusable metric card with accent colors
+- `components/dashboard/basic-user-dashboard.tsx` - Personal schedule and PTO view
+- `components/dashboard/team-lead-dashboard.tsx` - Mission health and pending actions
+- `components/dashboard/ops-lead-dashboard.tsx` - Cross-mission oversight and approvals
+- `components/dashboard/mission-health-grid.tsx` - Grid of missions with health indicators
+- `components/dashboard/mission-status-card.tsx` - Detailed mission card with stats
+- `components/dashboard/pending-pto-list.tsx` - PTO requests with approve/deny
+- `components/dashboard/coverage-alerts-list.tsx` - Coverage gap alerts
+- `components/dashboard/pending-approvals-table.tsx` - Schedule approvals table
+- `components/dashboard/upcoming-shifts-card.tsx` - User's upcoming shifts
+- `components/dashboard/my-pto-status.tsx` - User's PTO history
+- `convex/schedules.ts` - Extended with `getDashboardStats` aggregation query
+
+### E09: Advanced Workflows 🔲 READY
 PTO conflict detection, call-out handling, and schedule approval flow.
 
 ---

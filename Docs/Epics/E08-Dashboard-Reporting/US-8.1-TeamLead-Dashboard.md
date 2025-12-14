@@ -12,12 +12,12 @@ P0 - Critical for daily operations
 
 ## Acceptance Criteria
 
-- [ ] Shows unassigned shift count per mission
-- [ ] Shows pending PTO requests count
-- [ ] Shows coverage gaps in next 7 days
-- [ ] Quick actions to view schedule, extend, manage PTO
-- [ ] Mission overview with health indicators
-- [ ] My upcoming approvals/actions
+- [x] Shows unassigned shift count per mission
+- [x] Shows pending PTO requests count
+- [x] Shows coverage gaps in next 7 days
+- [x] Quick actions to view schedule, extend, manage PTO
+- [x] Mission overview with health indicators
+- [x] My upcoming approvals/actions
 
 ## Technical Details
 

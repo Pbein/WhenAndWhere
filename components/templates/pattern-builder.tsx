@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { PatternCell, ShiftState } from "./pattern-cell";
 import { PatternDay, patternToJson, parsePattern } from "@/lib/template-presets";
 
@@ -12,6 +12,37 @@ interface PatternBuilderProps {
   disabled?: boolean;
 }
 
+/**
+ * Build a pattern map from configuration and existing pattern JSON
+ */
+function buildPatternMap(
+  crewCount: number,
+  cycleDays: number,
+  patternJson: string
+): Map<number, ShiftState[]> {
+  const map = new Map<number, ShiftState[]>();
+
+  // Initialize all crews with off states for all days
+  for (let crew = 0; crew < crewCount; crew++) {
+    map.set(crew, Array(cycleDays).fill("off"));
+  }
+
+  // Apply existing pattern data
+  const parsed = parsePattern(patternJson);
+  parsed.forEach((p: PatternDay) => {
+    const crewPattern = map.get(p.crewIndex);
+    if (crewPattern && p.dayIndex < cycleDays) {
+      crewPattern[p.dayIndex] = p.work
+        ? p.shiftDefinitionKey === "day"
+          ? "day"
+          : "night"
+        : "off";
+    }
+  });
+
+  return map;
+}
+
 export function PatternBuilder({
   cycleDays,
   crewCount,
@@ -19,30 +50,44 @@ export function PatternBuilder({
   onChange,
   disabled,
 }: PatternBuilderProps) {
+  // Track previous values to detect changes
+  const prevCrewCount = useRef(crewCount);
+  const prevCycleDays = useRef(cycleDays);
+
   // Initialize state from pattern JSON
-  const [pattern, setPattern] = useState<Map<number, ShiftState[]>>(() => {
-    const map = new Map<number, ShiftState[]>();
+  const [pattern, setPattern] = useState<Map<number, ShiftState[]>>(() =>
+    buildPatternMap(crewCount, cycleDays, initialPatternJson)
+  );
 
-    // Initialize all crews as off
-    for (let crew = 0; crew < crewCount; crew++) {
-      map.set(crew, Array(cycleDays).fill("off"));
+  // Update pattern when crewCount or cycleDays changes
+  useEffect(() => {
+    const crewCountChanged = prevCrewCount.current !== crewCount;
+    const cycleDaysChanged = prevCycleDays.current !== cycleDays;
+
+    if (crewCountChanged || cycleDaysChanged) {
+      setPattern((prev) => {
+        const newMap = new Map<number, ShiftState[]>();
+
+        // Rebuild pattern preserving existing data where possible
+        for (let crew = 0; crew < crewCount; crew++) {
+          const existingCrewData = prev.get(crew);
+          const newCrewData: ShiftState[] = [];
+
+          for (let day = 0; day < cycleDays; day++) {
+            // Preserve existing state if available, otherwise default to off
+            newCrewData[day] = existingCrewData?.[day] ?? "off";
+          }
+
+          newMap.set(crew, newCrewData);
+        }
+
+        return newMap;
+      });
+
+      prevCrewCount.current = crewCount;
+      prevCycleDays.current = cycleDays;
     }
-
-    // Apply initial pattern
-    const parsed = parsePattern(initialPatternJson);
-    parsed.forEach((p: PatternDay) => {
-      const crewPattern = map.get(p.crewIndex);
-      if (crewPattern && p.dayIndex < cycleDays) {
-        crewPattern[p.dayIndex] = p.work
-          ? p.shiftDefinitionKey === "day"
-            ? "day"
-            : "night"
-          : "off";
-      }
-    });
-
-    return map;
-  });
+  }, [crewCount, cycleDays]);
 
   // Convert map to PatternDay array
   const patternToArray = useCallback(

@@ -12,12 +12,12 @@ P0 - Critical for operations oversight
 
 ## Acceptance Criteria
 
-- [ ] Shows all missions with health status at a glance
-- [ ] Shows schedules pending approval count
-- [ ] Shows cross-mission coverage gaps
-- [ ] Quick approve/reject actions
-- [ ] Summary statistics across all missions
-- [ ] Drill-down capability to any mission
+- [x] Shows all missions with health status at a glance
+- [x] Shows schedules pending approval count
+- [x] Shows cross-mission coverage gaps
+- [x] Quick approve/reject actions
+- [x] Summary statistics across all missions
+- [x] Drill-down capability to any mission
 
 ## Technical Details
 

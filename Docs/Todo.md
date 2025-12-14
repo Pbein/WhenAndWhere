@@ -20,14 +20,12 @@
 - [x] **E07: Template Management** - All 2 user stories complete (Dec 14, 2024)
   - US-7.1: Template List CRUD ✅
   - US-7.2: Visual Pattern Builder ✅
+- [x] **E08: Dashboard & Reporting** - All 2 user stories complete (Dec 14, 2024)
+  - US-8.1: TeamLead Dashboard ✅
+  - US-8.2: OpsLead Dashboard ✅
 
-## Next Up (Phase 5)
-- [ ] **E08: Dashboard & Reporting**
-  - US-8.1: TeamLead Dashboard
-  - US-8.2: OpsLead Dashboard
-
-## Backlog
-- [ ] E09: Advanced Workflows (Phase 6 - final polish)
+## Next Up (Phase 6 - Final Polish)
+- [ ] **E09: Advanced Workflows**
   - US-9.1: PTO Conflict Detection
   - US-9.2: Callout Workflow
   - US-9.3: Schedule Approval Flow
