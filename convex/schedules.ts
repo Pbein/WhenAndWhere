@@ -512,6 +512,53 @@ export const getMissionCoverageHealth = query({
 });
 
 /**
+ * Get aggregated coverage health across all active missions
+ * Used by ops-lead dashboard to avoid hooks-in-loops
+ */
+export const getAllMissionsCoverageHealth = query({
+  args: {},
+  handler: async (ctx) => {
+    await requireAuth(ctx);
+
+    const now = Date.now();
+    const weekFromNow = now + 7 * MS_PER_DAY;
+
+    // Get all active missions
+    const missions = await ctx.db
+      .query("zooMissions")
+      .filter((q) => q.eq(q.field("status"), "ACTIVE"))
+      .collect();
+
+    let totalGaps = 0;
+    let totalShifts = 0;
+
+    for (const mission of missions) {
+      const shifts = await ctx.db
+        .query("shiftInstances")
+        .withIndex("by_mission_and_date", (q) =>
+          q.eq("missionId", mission._id).gte("dateStart", now)
+        )
+        .filter((q) => q.lte(q.field("dateStart"), weekFromNow))
+        .collect();
+
+      totalShifts += shifts.length;
+
+      for (const shift of shifts) {
+        const details = await getShiftCoverageDetails(ctx, shift._id);
+        if (details.status === "red" || details.status === "yellow") {
+          totalGaps++;
+        }
+      }
+    }
+
+    return {
+      totalGaps,
+      totalShifts,
+    };
+  },
+});
+
+/**
  * Get eligible replacement candidates for a shift
  */
 export const getEligibleReplacements = query({
@@ -831,3 +878,6 @@ export const getDashboardStats = query({
     };
   },
 });
+
+
+

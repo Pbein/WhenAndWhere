@@ -47,3 +47,6 @@ export function PatternCell({ state, onClick, disabled }: PatternCellProps) {
     </button>
   );
 }
+
+
+

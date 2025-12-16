@@ -57,3 +57,6 @@ Pattern: ██████░░░░░░░░ (Day 7)
 - `app/(app)/missions/[id]/page.tsx` - New
 - `components/missions/lifecycle-card.tsx` - New
 - `components/missions/shift-defs-card.tsx` - New
+
+
+

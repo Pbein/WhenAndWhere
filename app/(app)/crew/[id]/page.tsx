@@ -1,5 +1,6 @@
 "use client";
 
+import { use } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -12,11 +13,12 @@ import { UpcomingShiftsList } from "@/components/crew/upcoming-shifts-list";
 import { PTOHistoryList } from "@/components/crew/pto-history-list";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default function EmployeeDetailPage({ params }: Props) {
-  const userId = params.id as Id<"users">;
+  const { id } = use(params);
+  const userId = id as Id<"users">;
 
   const user = useQuery(api.users.get, { id: userId });
   const crews = useQuery(api.teams.getUserCrews, { userId });
@@ -107,3 +109,7 @@ export default function EmployeeDetailPage({ params }: Props) {
     </div>
   );
 }
+
+
+
+

@@ -77,3 +77,6 @@ export function QuickActionsCard({ mission }: QuickActionsCardProps) {
     </Card>
   );
 }
+
+
+

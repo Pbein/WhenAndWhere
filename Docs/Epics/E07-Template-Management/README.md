@@ -70,3 +70,6 @@ Offer common patterns as presets:
 - `components/templates/pattern-builder.tsx` - New visual editor
 - `components/templates/pattern-preview.tsx` - Read-only preview
 - `lib/template-presets.ts` - Preset pattern definitions
+
+
+

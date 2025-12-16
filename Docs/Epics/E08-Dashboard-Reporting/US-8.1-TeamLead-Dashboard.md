@@ -245,3 +245,6 @@ function MissionHealthCard({ mission }: { mission: Mission }) {
 ## Estimate
 
 Medium (M)
+
+
+

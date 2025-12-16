@@ -145,7 +145,10 @@ export function MissionLifecycleCard({ mission }: MissionLifecycleCardProps) {
               >
                 {mission.status}
               </Badge>
-              {isEditing && <MissionStatusActions mission={mission} />}
+              {/* Show actions when editing, or always for terminated missions */}
+              {(isEditing || mission.status === "TERMINATED") && (
+                <MissionStatusActions mission={mission} />
+              )}
             </div>
           </div>
         </div>
@@ -180,3 +183,7 @@ export function MissionLifecycleCard({ mission }: MissionLifecycleCardProps) {
     </Card>
   );
 }
+
+
+
+

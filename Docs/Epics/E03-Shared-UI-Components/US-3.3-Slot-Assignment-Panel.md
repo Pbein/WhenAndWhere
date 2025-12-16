@@ -228,3 +228,6 @@ export function SlotPanel({ shiftId, isOpen, onClose }: SlotPanelProps) {
 ## Estimate
 
 Large (L)
+
+
+

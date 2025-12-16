@@ -96,3 +96,6 @@ Visual representation:
 - `components/dashboard/upcoming-shifts-card.tsx` - User's upcoming shifts display
 - `components/dashboard/my-pto-status.tsx` - User's PTO request history
 - `convex/schedules.ts` - Extended with `getDashboardStats` aggregation query
+
+
+

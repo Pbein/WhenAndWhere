@@ -80,3 +80,6 @@ export function CrewCard({ team, mission, isExpanded, onToggle }: CrewCardProps)
     </Card>
   );
 }
+
+
+

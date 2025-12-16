@@ -208,3 +208,6 @@ export default defineSchema({
     missionId: v.optional(v.id("zooMissions")),
   }).index("by_date", ["date"]),
 });
+
+
+

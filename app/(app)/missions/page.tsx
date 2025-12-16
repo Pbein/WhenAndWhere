@@ -1,30 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
+import { CreateMissionDialog } from "@/components/missions/create-mission-dialog";
 
 export default function MissionsPage() {
   const missions = useQuery(api.missions.list);
-  const createMission = useMutation(api.missions.create);
-  const [isAdding, setIsAdding] = useState(false);
-
-  const handleCreate = async () => {
-    setIsAdding(true);
-    try {
-      await createMission({
-        name: "New Mission",
-        description: "Description here",
-        status: "ACTIVE",
-      });
-    } finally {
-      setIsAdding(false);
-    }
-  };
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   return (
     <div className="space-y-6">
@@ -33,10 +20,15 @@ export default function MissionsPage() {
           <h1 className="text-2xl font-semibold text-[#f5f5f5]">Missions</h1>
           <p className="text-sm text-[#a1a1aa]">Manage zoo habitats and areas</p>
         </div>
-        <Button onClick={handleCreate} disabled={isAdding}>
+        <Button onClick={() => setShowCreateDialog(true)}>
           Add Mission
         </Button>
       </div>
+
+      <CreateMissionDialog
+        open={showCreateDialog}
+        onOpenChange={setShowCreateDialog}
+      />
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {missions?.map((mission) => (

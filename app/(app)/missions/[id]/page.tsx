@@ -1,5 +1,6 @@
 "use client";
 
+import { use } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -11,11 +12,12 @@ import { ShiftDefinitionsCard } from "@/components/missions/shift-definitions-ca
 import { QuickActionsCard } from "@/components/missions/quick-actions-card";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default function MissionDetailPage({ params }: Props) {
-  const missionId = params.id as Id<"zooMissions">;
+  const { id } = use(params);
+  const missionId = id as Id<"zooMissions">;
 
   const mission = useQuery(api.missions.get, { id: missionId });
   const crews = useQuery(api.teams.listByMissionWithCounts, { missionId });
@@ -77,3 +79,7 @@ export default function MissionDetailPage({ params }: Props) {
     </div>
   );
 }
+
+
+
+

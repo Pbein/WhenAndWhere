@@ -140,3 +140,6 @@ export function calculateCycleDay(
 ## Estimate
 
 Medium (M)
+
+
+

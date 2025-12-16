@@ -76,3 +76,6 @@ Follow existing dark theme conventions:
 - `components/schedule/employee-list.tsx` - New
 - `components/schedule/schedule-context.tsx` - New
 - `components/schedule/hooks/use-calendar-navigation.ts` - New
+
+
+

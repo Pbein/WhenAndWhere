@@ -172,3 +172,6 @@ export function CreateTeamDialog({ open, onOpenChange }: CreateTeamDialogProps) 
     </div>
   );
 }
+
+
+

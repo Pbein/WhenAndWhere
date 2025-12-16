@@ -294,3 +294,6 @@ export function MissionStatusActions({ mission }: { mission: Mission }) {
 ## Estimate
 
 Medium (M)
+
+
+

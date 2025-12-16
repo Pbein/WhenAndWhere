@@ -94,3 +94,6 @@ export function PatternPreview({ patternJson, cycleDays }: PatternPreviewProps) 
     </div>
   );
 }
+
+
+

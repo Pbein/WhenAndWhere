@@ -116,3 +116,6 @@ export function parsePattern(json: string): PatternDay[] {
     return [];
   }
 }
+
+
+

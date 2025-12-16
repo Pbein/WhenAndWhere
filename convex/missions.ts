@@ -191,6 +191,20 @@ export const terminate = mutation({
 });
 
 /**
+ * Reactivate a terminated mission
+ */
+export const reactivate = mutation({
+  args: { id: v.id("zooMissions") },
+  handler: async (ctx, args) => {
+    await requireRole(ctx, ["OperationsLead", "Admin"]);
+    await ctx.db.patch(args.id, {
+      status: "ACTIVE",
+      terminatedAt: undefined,
+    });
+  },
+});
+
+/**
  * Set the active template for a mission (for schedule generation)
  */
 export const setActiveTemplate = mutation({
@@ -243,3 +257,6 @@ export const migrateToStatus = mutation({
     return { migrated, total: missions.length };
   },
 });
+
+
+

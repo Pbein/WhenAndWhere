@@ -71,3 +71,6 @@ Add expandable crew cards showing:
 - `app/(app)/crew/[id]/page.tsx` - New employee detail
 - `components/crew/member-picker.tsx` - New
 - `components/crew/qualification-badge.tsx` - New
+
+
+
