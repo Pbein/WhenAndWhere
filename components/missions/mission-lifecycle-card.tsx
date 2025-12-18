@@ -81,7 +81,7 @@ export function MissionLifecycleCard({ mission }: MissionLifecycleCardProps) {
           {/* Template Selection */}
           <div className="space-y-2">
             <label className="text-xs font-medium text-[#a1a1aa]">
-              Schedule Template
+              Schedule Pattern
             </label>
             {isEditing ? (
               <select
@@ -90,7 +90,7 @@ export function MissionLifecycleCard({ mission }: MissionLifecycleCardProps) {
                 disabled={isSaving}
                 className="w-full rounded-md border border-[#2a2a2a] bg-[#111111] px-3 py-2 text-sm text-[#f5f5f5]"
               >
-                <option value="">Select template...</option>
+                <option value="">Select pattern...</option>
                 {templates?.map((t) => (
                   <option key={t._id} value={t._id}>
                     {t.name}
@@ -107,7 +107,7 @@ export function MissionLifecycleCard({ mission }: MissionLifecycleCardProps) {
           {/* Anchor Date */}
           <div className="space-y-2">
             <label className="text-xs font-medium text-[#a1a1aa]">
-              Cycle Anchor Date
+              Schedule Start Date
             </label>
             {isEditing ? (
               <input

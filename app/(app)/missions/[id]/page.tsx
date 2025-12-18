@@ -10,6 +10,7 @@ import { MissionLifecycleCard } from "@/components/missions/mission-lifecycle-ca
 import { CrewsCard } from "@/components/missions/crews-card";
 import { ShiftDefinitionsCard } from "@/components/missions/shift-definitions-card";
 import { QuickActionsCard } from "@/components/missions/quick-actions-card";
+import { SetupChecklist } from "@/components/missions/setup-checklist";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -61,6 +62,9 @@ export default function MissionDetailPage({ params }: Props) {
 
       {/* Header */}
       <MissionHeader mission={missionWithStatus} />
+
+      {/* Setup Checklist - shown prominently when setup is incomplete */}
+      <SetupChecklist mission={missionWithStatus} missionId={missionId} />
 
       {/* Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

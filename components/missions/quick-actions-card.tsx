@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useMutation } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Doc } from "@/convex/_generated/dataModel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { GenerateScheduleDialog } from "./generate-schedule-dialog";
 
 interface QuickActionsCardProps {
   mission: Doc<"zooMissions"> & { status: "ACTIVE" | "PAUSED" | "TERMINATED" };
@@ -15,13 +16,24 @@ interface QuickActionsCardProps {
 export function QuickActionsCard({ mission }: QuickActionsCardProps) {
   const extendSchedule = useMutation(api.schedules.extendSchedule);
   const [isExtending, setIsExtending] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  
+  // Check if schedule has been generated
+  const lastGeneratedDate = useQuery(api.schedules.getLastGeneratedDate, {
+    missionId: mission._id,
+  });
 
-  const handleExtendTwoWeeks = async () => {
+  const hasSchedule = !!lastGeneratedDate;
+
+  const handleShowDialog = () => {
     if (!mission.activeTemplateId || !mission.cycleAnchorDate) {
-      alert("Please configure a template and anchor date first.");
+      alert("Please configure a schedule pattern and start date first.");
       return;
     }
+    setShowDialog(true);
+  };
 
+  const handleConfirmGenerate = async () => {
     setIsExtending(true);
     try {
       const twoWeeksFromNow = Date.now() + 14 * 24 * 60 * 60 * 1000;
@@ -29,9 +41,15 @@ export function QuickActionsCard({ mission }: QuickActionsCardProps) {
         missionId: mission._id,
         endDate: twoWeeksFromNow,
       });
-      alert(`Generated ${result.generated} shifts!`);
+      
+      const message = hasSchedule
+        ? `Added ${result.generated} shifts with ${result.assignments} assignments!`
+        : `Generated ${result.generated} shifts with ${result.assignments} assignments! Schedule is ready.`;
+      
+      alert(message);
+      setShowDialog(false);
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Failed to extend schedule");
+      alert(error instanceof Error ? error.message : "Failed to generate schedule");
     } finally {
       setIsExtending(false);
     }
@@ -55,10 +73,14 @@ export function QuickActionsCard({ mission }: QuickActionsCardProps) {
         <Button
           variant="outline"
           className="w-full justify-start"
-          onClick={handleExtendTwoWeeks}
+          onClick={handleShowDialog}
           disabled={!isConfigured || isExtending || mission.status !== "ACTIVE"}
         >
-          {isExtending ? "⏳ Extending..." : "➕ Extend Schedule 2 Weeks"}
+          {isExtending
+            ? "⏳ Generating..."
+            : hasSchedule
+            ? "➕ Add 2 More Weeks"
+            : "🚀 Generate Schedule"}
         </Button>
 
         <Link
@@ -70,13 +92,23 @@ export function QuickActionsCard({ mission }: QuickActionsCardProps) {
 
         {!isConfigured && (
           <p className="text-xs text-[#a1a1aa] mt-2">
-            Configure a template and anchor date to enable schedule generation.
+            Configure a schedule pattern and start date to enable schedule generation.
           </p>
         )}
       </CardContent>
+
+      <GenerateScheduleDialog
+        mission={mission}
+        isOpen={showDialog}
+        onClose={() => setShowDialog(false)}
+        onConfirm={handleConfirmGenerate}
+        isGenerating={isExtending}
+        hasExistingSchedule={hasSchedule}
+      />
     </Card>
   );
 }
+
 
 
 

@@ -30,7 +30,7 @@ export function ShiftDefinitionsCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Shift Definitions</CardTitle>
+        <CardTitle>Shift Times</CardTitle>
         <Button variant="ghost" size="sm" onClick={() => setIsAdding(true)}>
           + Add Shift
         </Button>
@@ -92,13 +92,14 @@ export function ShiftDefinitionsCard({
 
         {(!shiftDefs || shiftDefs.length === 0) && !isAdding && (
           <div className="text-sm text-[#a1a1aa] py-4 text-center">
-            No shift definitions. Add Day/Night shifts to get started.
+            No shift times configured. Add Day/Night shifts to get started.
           </div>
         )}
       </CardContent>
     </Card>
   );
 }
+
 
 
 
