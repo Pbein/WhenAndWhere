@@ -1,5 +1,7 @@
 "use client";
 
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +25,7 @@ interface AssignmentSectionProps {
   required: number;
   onAdd: () => void;
   onRemove: (assignmentId: Id<"shiftAssignments">) => void;
+  onSwap?: (assignmentId: Id<"shiftAssignments">) => void;
   className?: string;
 }
 
@@ -36,6 +39,7 @@ export function AssignmentSection({
   required,
   onAdd,
   onRemove,
+  onSwap,
   className,
 }: AssignmentSectionProps) {
   const count = assignments.length;
@@ -68,6 +72,7 @@ export function AssignmentSection({
               key={assignment._id}
               assignment={assignment}
               onRemove={() => onRemove(assignment._id)}
+              onSwap={onSwap ? () => onSwap(assignment._id) : undefined}
             />
           ))}
         </div>
@@ -94,10 +99,17 @@ export function AssignmentSection({
 interface AssignmentCardProps {
   assignment: Assignment;
   onRemove: () => void;
+  onSwap?: () => void;
 }
 
-function AssignmentCard({ assignment, onRemove }: AssignmentCardProps) {
+function AssignmentCard({ assignment, onRemove, onSwap }: AssignmentCardProps) {
   const user = assignment.user;
+
+  // Fetch crew memberships for this user
+  const crewMemberships = useQuery(
+    api.teams.getUserCrews,
+    user?._id ? { userId: user._id } : "skip"
+  );
 
   return (
     <div className="flex items-center justify-between p-2 rounded-lg bg-[#1a1a1a] border border-[#2a2a2a] group">
@@ -106,14 +118,36 @@ function AssignmentCard({ assignment, onRemove }: AssignmentCardProps) {
           <User className="h-4 w-4 text-[#a1a1aa]" />
         </div>
 
-        <div className="min-w-0">
-          <div className="text-sm font-medium text-[#f5f5f5] truncate">
-            {user?.name || user?.email || "Unknown User"}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-sm font-medium text-[#f5f5f5] truncate">
+              {user?.name || user?.email || "Unknown User"}
+            </span>
+
+            {/* Crew badges */}
+            {crewMemberships && crewMemberships.length > 0 && (
+              <>
+                {crewMemberships.slice(0, 2).map((membership) => (
+                  <Badge
+                    key={membership._id}
+                    tone={membership.isPrimary ? "green" : "blue"}
+                    className="text-[10px] px-1.5 py-0"
+                  >
+                    {membership.team?.name || "Unknown Crew"}
+                  </Badge>
+                ))}
+                {crewMemberships.length > 2 && (
+                  <span className="text-[10px] text-[#a1a1aa]">
+                    +{crewMemberships.length - 2}
+                  </span>
+                )}
+              </>
+            )}
           </div>
 
           {/* Qualifications */}
           {assignment.qualifications && assignment.qualifications.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-0.5">
+            <div className="flex flex-wrap gap-1 mt-1">
               {assignment.qualifications.slice(0, 2).map((q, i) => (
                 <span
                   key={i}
@@ -137,16 +171,41 @@ function AssignmentCard({ assignment, onRemove }: AssignmentCardProps) {
         </div>
       </div>
 
-      <button
-        onClick={onRemove}
-        className="flex-shrink-0 p-1 rounded text-[#505050] hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
-        title="Remove assignment"
-      >
-        <X className="h-4 w-4" />
-      </button>
+      <div className="flex items-center gap-1 flex-shrink-0">
+        {onSwap && (
+          <button
+            onClick={onSwap}
+            className="p-1 rounded text-[#505050] hover:text-blue-400 hover:bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
+            title="Swap assignment"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M7 16V4M7 4L3 8M7 4l4 4" />
+              <path d="M17 8v12m0 0l4-4m-4 4l-4-4" />
+            </svg>
+          </button>
+        )}
+        <button
+          onClick={onRemove}
+          className="p-1 rounded text-[#505050] hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity"
+          title="Remove assignment"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
     </div>
   );
 }
+
+
 
 
 

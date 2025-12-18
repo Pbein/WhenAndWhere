@@ -34,7 +34,7 @@ export default function EmployeeDetailPage({ params }: Props) {
   if (user === undefined) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-[#a1a1aa]">Loading...</div>
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#2a2a2a] border-t-emerald-500" />
       </div>
     );
   }
@@ -79,7 +79,7 @@ export default function EmployeeDetailPage({ params }: Props) {
         {/* Qualifications */}
         <Card>
           <CardHeader>
-            <CardTitle>Qualifications</CardTitle>
+            <CardTitle>Qualifications & Training</CardTitle>
           </CardHeader>
           <CardContent>
             <QualificationsList qualifications={qualifications} userId={userId} />
@@ -99,7 +99,7 @@ export default function EmployeeDetailPage({ params }: Props) {
         {/* PTO History */}
         <Card>
           <CardHeader>
-            <CardTitle>PTO History</CardTitle>
+            <CardTitle>PTO Requests</CardTitle>
           </CardHeader>
           <CardContent>
             <PTOHistoryList requests={ptoHistory} />
@@ -109,8 +109,4 @@ export default function EmployeeDetailPage({ params }: Props) {
     </div>
   );
 }
-
-
-
-
 

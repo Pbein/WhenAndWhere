@@ -108,6 +108,11 @@ export function PatternBuilder({
     []
   );
 
+  // Notify parent when pattern changes
+  useEffect(() => {
+    onChange(patternToJson(patternToArray(pattern)));
+  }, [pattern, onChange, patternToArray]);
+
   const cycleCell = useCallback(
     (crewIndex: number, dayIndex: number) => {
       if (disabled) return;
@@ -124,13 +129,10 @@ export function PatternBuilder({
         crewStates[dayIndex] = next;
         newPattern.set(crewIndex, crewStates);
 
-        // Notify parent
-        onChange(patternToJson(patternToArray(newPattern)));
-
         return newPattern;
       });
     },
-    [disabled, onChange, patternToArray]
+    [disabled]
   );
 
   const crewLabels = ["A", "B", "C", "D", "E", "F", "G", "H"];
@@ -157,24 +159,22 @@ export function PatternBuilder({
           ))}
 
           {/* Crew rows */}
-          {Array.from({ length: crewCount }).map((_, crewIndex) => (
-            <>
-              <div
-                key={`label-${crewIndex}`}
-                className="text-sm font-medium text-[#f5f5f5] p-2 flex items-center"
-              >
-                Crew {crewLabels[crewIndex] ?? crewIndex + 1}
-              </div>
-              {(pattern.get(crewIndex) ?? []).map((state, dayIndex) => (
-                <PatternCell
-                  key={`${crewIndex}-${dayIndex}`}
-                  state={state}
-                  onClick={() => cycleCell(crewIndex, dayIndex)}
-                  disabled={disabled}
-                />
-              ))}
-            </>
-          ))}
+          {Array.from({ length: crewCount }).map((_, crewIndex) => [
+            <div
+              key={`label-${crewIndex}`}
+              className="text-sm font-medium text-[#f5f5f5] p-2 flex items-center"
+            >
+              Crew {crewLabels[crewIndex] ?? crewIndex + 1}
+            </div>,
+            ...(pattern.get(crewIndex) ?? []).map((state, dayIndex) => (
+              <PatternCell
+                key={`${crewIndex}-${dayIndex}`}
+                state={state}
+                onClick={() => cycleCell(crewIndex, dayIndex)}
+                disabled={disabled}
+              />
+            ))
+          ])}
         </div>
       </div>
 
@@ -197,6 +197,8 @@ export function PatternBuilder({
     </div>
   );
 }
+
+
 
 
 

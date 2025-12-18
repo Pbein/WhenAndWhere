@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CrewMemberRow } from "./crew-member-row";
 import { AddMemberDialog } from "./add-member-dialog";
+import { DeleteTeamDialog } from "./delete-team-dialog";
 
 interface CrewCardProps {
   team: Doc<"teams">;
@@ -20,23 +21,37 @@ interface CrewCardProps {
 export function CrewCard({ team, mission, isExpanded, onToggle }: CrewCardProps) {
   const members = useQuery(api.teams.getCrewMembers, { teamId: team._id });
   const [isAddingMember, setIsAddingMember] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   return (
     <Card>
       <CardHeader className="cursor-pointer" onClick={onToggle}>
-        <div className="flex items-center gap-3">
-          <div
-            className="h-3 w-3 rounded-full"
-            style={{ backgroundColor: team.color ?? "#10b981" }}
-          />
-          <CardTitle>{team.name}</CardTitle>
-          <Badge tone="blue">{members?.length ?? 0} members</Badge>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-[#a1a1aa]">{mission?.name}</span>
-          <span className="text-[#a1a1aa] text-lg">
-            {isExpanded ? "▲" : "▼"}
-          </span>
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-3">
+            <div
+              className="h-3 w-3 rounded-full"
+              style={{ backgroundColor: team.color ?? "#10b981" }}
+            />
+            <CardTitle>{team.name}</CardTitle>
+            <Badge tone="blue">{members?.length ?? 0} members</Badge>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-[#a1a1aa]">{mission?.name}</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsDeleting(true);
+              }}
+              className="text-red-500 hover:text-red-600 hover:bg-red-950/20"
+            >
+              Delete
+            </Button>
+            <span className="text-[#a1a1aa] text-lg">
+              {isExpanded ? "▲" : "▼"}
+            </span>
+          </div>
         </div>
       </CardHeader>
 
@@ -77,9 +92,18 @@ export function CrewCard({ team, mission, isExpanded, onToggle }: CrewCardProps)
           />
         </CardContent>
       )}
+
+      <DeleteTeamDialog
+        teamId={team._id}
+        teamName={team.name}
+        open={isDeleting}
+        onOpenChange={setIsDeleting}
+      />
     </Card>
   );
 }
+
+
 
 
 

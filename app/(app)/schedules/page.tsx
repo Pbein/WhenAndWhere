@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
@@ -33,8 +34,13 @@ interface DateRange {
  * Supports week and month views with filtering and slot assignment panel.
  */
 export default function SchedulesPage() {
-  // Mission selection
+  // Read mission from URL query params
+  const searchParams = useSearchParams();
+  const missionParam = searchParams.get("mission");
+  
+  // Mission selection - initialize from URL param if present
   const [selectedMissionId, setSelectedMissionId] = useState<Id<"zooMissions"> | null>(null);
+  const [hasInitializedFromUrl, setHasInitializedFromUrl] = useState(false);
   
   // View state
   const [viewMode, setViewMode] = useState<ViewMode>("week");
@@ -54,6 +60,14 @@ export default function SchedulesPage() {
 
   // Fetch data
   const missions = useQuery(api.missions.listActive);
+  
+  // Set mission from URL param on initial load
+  useEffect(() => {
+    if (missionParam && !hasInitializedFromUrl) {
+      setSelectedMissionId(missionParam as Id<"zooMissions">);
+      setHasInitializedFromUrl(true);
+    }
+  }, [missionParam, hasInitializedFromUrl]);
   const teams = useQuery(
     api.teams.listByMission,
     selectedMissionId ? { missionId: selectedMissionId } : "skip"

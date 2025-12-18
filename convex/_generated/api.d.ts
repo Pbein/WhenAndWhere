@@ -19,6 +19,7 @@ import type * as pto from "../pto.js";
 import type * as qualifications from "../qualifications.js";
 import type * as rbac from "../rbac.js";
 import type * as schedules from "../schedules.js";
+import type * as seed from "../seed.js";
 import type * as shiftDefinitions from "../shiftDefinitions.js";
 import type * as teams from "../teams.js";
 import type * as templates from "../templates.js";
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   qualifications: typeof qualifications;
   rbac: typeof rbac;
   schedules: typeof schedules;
+  seed: typeof seed;
   shiftDefinitions: typeof shiftDefinitions;
   teams: typeof teams;
   templates: typeof templates;

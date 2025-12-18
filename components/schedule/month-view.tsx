@@ -166,12 +166,12 @@ export function MonthView({
   return (
     <div
       className={cn(
-        "rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] overflow-hidden",
+        "rounded-xl border border-[#2a2a2a] bg-[#0a0a0a] flex flex-col",
         className
       )}
     >
-      {/* Navigation header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#2a2a2a] bg-[#111111]">
+      {/* Navigation header - fixed */}
+      <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-[#2a2a2a] bg-[#111111]">
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
@@ -204,8 +204,8 @@ export function MonthView({
         </div>
       </div>
 
-      {/* Day of week headers */}
-      <div className="grid grid-cols-7 border-b border-[#2a2a2a] bg-[#111111]">
+      {/* Day of week headers - fixed */}
+      <div className="flex-shrink-0 grid grid-cols-7 border-b border-[#2a2a2a] bg-[#111111]">
         {DAY_NAMES.map((day) => (
           <div
             key={day}
@@ -216,8 +216,8 @@ export function MonthView({
         ))}
       </div>
 
-      {/* Calendar grid */}
-      <div className="p-1">
+      {/* Calendar grid - scrollable */}
+      <div className="flex-1 overflow-auto min-h-0 p-1">
         {calendarData.weeks.map((week, weekIndex) => (
           <div key={weekIndex} className="grid grid-cols-7 gap-1">
             {week.map((date) => {
@@ -231,7 +231,7 @@ export function MonthView({
                   key={dateKey}
                   onClick={() => onDayClick(date)}
                   className={cn(
-                    "p-2 rounded-lg text-left transition-colors min-h-[80px]",
+                    "p-2 rounded-lg text-left transition-colors min-h-[60px] sm:min-h-[80px]",
                     "hover:bg-[#1a1a1a] focus:outline-none focus:ring-2 focus:ring-emerald-500",
                     !inCurrentMonth && "opacity-40",
                     today && "bg-emerald-500/10 border border-emerald-500/30"
@@ -275,6 +275,8 @@ export function MonthView({
     </div>
   );
 }
+
+
 
 
 

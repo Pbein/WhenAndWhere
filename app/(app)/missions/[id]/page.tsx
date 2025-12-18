@@ -68,7 +68,11 @@ export default function MissionDetailPage({ params }: Props) {
         <MissionLifecycleCard mission={missionWithStatus} />
 
         {/* Crews Card */}
-        <CrewsCard crews={crews} missionId={missionId} />
+        <CrewsCard 
+          crews={crews} 
+          missionId={missionId} 
+          templateId={mission.activeTemplateId ?? null}
+        />
 
         {/* Shift Definitions Card */}
         <ShiftDefinitionsCard shiftDefs={shiftDefs} missionId={missionId} />
@@ -79,6 +83,7 @@ export default function MissionDetailPage({ params }: Props) {
     </div>
   );
 }
+
 
 
 

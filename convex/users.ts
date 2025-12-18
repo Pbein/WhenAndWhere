@@ -156,6 +156,83 @@ export const upsertFromClerk = internalMutation({
   },
 });
 
+/**
+ * Get all users with their qualifications, crew memberships, and mission eligibility
+ * Used for the Roster view
+ */
+export const listWithDetails = query({
+  args: {},
+  handler: async (ctx) => {
+    await requireRole(ctx, ["TeamLead", "OperationsLead", "Admin"]);
+    
+    const users = await ctx.db.query("users").collect();
+    
+    // Fetch all related data for each user
+    return await Promise.all(
+      users.map(async (user) => {
+        // Get qualifications
+        const userQualifications = await ctx.db
+          .query("userQualifications")
+          .withIndex("by_user", (q) => q.eq("userId", user._id))
+          .collect();
+        
+        const qualifications = await Promise.all(
+          userQualifications.map(async (uq) => {
+            const qualification = await ctx.db.get(uq.qualificationId);
+            return { ...uq, qualification };
+          })
+        );
+        
+        // Get crew memberships
+        const memberships = await ctx.db
+          .query("crewMemberships")
+          .withIndex("by_user", (q) => q.eq("userId", user._id))
+          .collect();
+        
+        const crews = await Promise.all(
+          memberships.map(async (m) => {
+            const team = await ctx.db.get(m.teamId);
+            const mission = team ? await ctx.db.get(team.missionId) : null;
+            return { ...m, team, mission };
+          })
+        );
+        
+        // Get mission eligibility
+        const eligibilities = await ctx.db
+          .query("missionEligibility")
+          .withIndex("by_user", (q) => q.eq("userId", user._id))
+          .collect();
+        
+        const eligibleMissions = await Promise.all(
+          eligibilities.map(async (e) => {
+            const mission = await ctx.db.get(e.missionId);
+            return { ...e, mission };
+          })
+        );
+        
+        // Get pending PTO requests count
+        const ptoRequests = await ctx.db
+          .query("ptoRequests")
+          .withIndex("by_user", (q) => q.eq("userId", user._id))
+          .collect();
+        
+        const pendingPtoCount = ptoRequests.filter(r => r.status === "PENDING").length;
+        const approvedPtoCount = ptoRequests.filter(r => r.status === "APPROVED").length;
+        
+        return {
+          ...user,
+          qualifications,
+          crews,
+          eligibleMissions,
+          pendingPtoCount,
+          approvedPtoCount,
+        };
+      })
+    );
+  },
+});
+
+
 
 
 

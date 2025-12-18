@@ -18,6 +18,34 @@ export const get = query({
   },
 });
 
+export const getTemplateRequirements = query({
+  args: { templateId: v.id("scheduleTemplates") },
+  handler: async (ctx, args) => {
+    await requireAuth(ctx);
+    const template = await ctx.db.get(args.templateId);
+    if (!template) return null;
+
+    // Parse pattern to determine required crew count
+    let requiredCrewCount = 0;
+    try {
+      const pattern = JSON.parse(template.patternJson);
+      const crewIndices = new Set(pattern.map((p: any) => p.crewIndex));
+      requiredCrewCount = crewIndices.size;
+    } catch {
+      // If parsing fails, return 0
+      requiredCrewCount = 0;
+    }
+
+    return {
+      templateId: template._id,
+      templateName: template.name,
+      requiredCrewCount,
+      cycleDays: template.cycleDays,
+      shiftLengthHours: template.shiftLengthHours,
+    };
+  },
+});
+
 export const create = mutation({
   args: {
     name: v.string(),
@@ -56,6 +84,7 @@ export const remove = mutation({
     await ctx.db.delete(args.id);
   },
 });
+
 
 
 

@@ -117,5 +117,16 @@ export function parsePattern(json: string): PatternDay[] {
   }
 }
 
+// Get the number of unique crews required by a pattern
+export function getRequiredCrewCount(patternJson: string): number {
+  const pattern = parsePattern(patternJson);
+  if (pattern.length === 0) return 0;
+  
+  const crewIndices = new Set(pattern.map(p => p.crewIndex));
+  return crewIndices.size;
+}
+
+
+
 
 

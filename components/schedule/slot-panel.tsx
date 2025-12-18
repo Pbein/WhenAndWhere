@@ -40,6 +40,10 @@ export function SlotPanel({
   className,
 }: SlotPanelProps) {
   const [addingRole, setAddingRole] = useState<AssignmentRole | null>(null);
+  const [swappingAssignment, setSwappingAssignment] = useState<{
+    assignmentId: Id<"shiftAssignments">;
+    role: AssignmentRole;
+  } | null>(null);
 
   const shift = useQuery(
     api.schedules.getShiftWithAssignments,
@@ -59,8 +63,28 @@ export function SlotPanel({
     setAddingRole(null);
   };
 
+  const handleSwap = async (userId: Id<"users">) => {
+    if (!shiftId || !swappingAssignment) return;
+    
+    // Remove old assignment
+    await removeAssignment({ assignmentId: swappingAssignment.assignmentId });
+    
+    // Add new assignment with same role
+    await assignUser({
+      shiftInstanceId: shiftId,
+      userId,
+      role: swappingAssignment.role,
+    });
+    
+    setSwappingAssignment(null);
+  };
+
   const handleRemove = async (assignmentId: Id<"shiftAssignments">) => {
     await removeAssignment({ assignmentId });
+  };
+
+  const handleSwapClick = (assignmentId: Id<"shiftAssignments">, role: AssignmentRole) => {
+    setSwappingAssignment({ assignmentId, role });
   };
 
   if (!isOpen) return null;
@@ -77,16 +101,23 @@ export function SlotPanel({
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-[#2a2a2a]">
         <div className="flex items-center gap-2">
-          {addingRole && (
+          {(addingRole || swappingAssignment) && (
             <button
-              onClick={() => setAddingRole(null)}
+              onClick={() => {
+                setAddingRole(null);
+                setSwappingAssignment(null);
+              }}
               className="p-1 rounded hover:bg-[#2a2a2a] text-[#a1a1aa]"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
           )}
           <h2 className="text-lg font-semibold text-[#f5f5f5]">
-            {addingRole ? `Add ${addingRole.toLowerCase()}` : "Shift Details"}
+            {addingRole
+              ? `Add ${addingRole.toLowerCase()}`
+              : swappingAssignment
+              ? `Swap ${swappingAssignment.role.toLowerCase()}`
+              : "Shift Details"}
           </h2>
         </div>
         <button
@@ -104,6 +135,14 @@ export function SlotPanel({
           role={addingRole}
           onSelect={handleAssign}
           onClose={() => setAddingRole(null)}
+          className="flex-1"
+        />
+      ) : swappingAssignment && shiftId ? (
+        <EmployeeList
+          shiftId={shiftId}
+          role={swappingAssignment.role}
+          onSelect={handleSwap}
+          onClose={() => setSwappingAssignment(null)}
           className="flex-1"
         />
       ) : (
@@ -179,6 +218,7 @@ export function SlotPanel({
                   required={shift.shiftDefinition?.minPrimary ?? 1}
                   onAdd={() => setAddingRole("PRIMARY")}
                   onRemove={handleRemove}
+                  onSwap={(assignmentId) => handleSwapClick(assignmentId, "PRIMARY")}
                 />
 
                 <div className="border-t border-[#2a2a2a]" />
@@ -190,6 +230,7 @@ export function SlotPanel({
                   required={shift.shiftDefinition?.minBackup ?? 0}
                   onAdd={() => setAddingRole("BACKUP")}
                   onRemove={handleRemove}
+                  onSwap={(assignmentId) => handleSwapClick(assignmentId, "BACKUP")}
                 />
 
                 <div className="border-t border-[#2a2a2a]" />
@@ -201,6 +242,7 @@ export function SlotPanel({
                   required={0}
                   onAdd={() => setAddingRole("ON_CALL")}
                   onRemove={handleRemove}
+                  onSwap={(assignmentId) => handleSwapClick(assignmentId, "ON_CALL")}
                 />
               </div>
 
@@ -220,6 +262,8 @@ export function SlotPanel({
     </div>
   );
 }
+
+
 
 
 
